@@ -1,15 +1,480 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Kalimati Price Visualization</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalimati Market Analytics & Recipe Suggestions</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Marked.js for markdown parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #e1e8ed;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #6c757d;
+            font-weight: 300;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e8ed;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-container {
+            margin: 2rem 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .recipe-section {
+            background: #fff;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+        }
+
+        .recipe-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .form-group input {
+            padding: 1rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #f8f9fa;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: white;
+            border-color: #3498db;
+            transform: scale(1.02);
+        }
+
+        .form-group input::placeholder {
+            color: #6c757d;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+            border: 2px solid #3498db;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            border-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .recipe-result {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid #e1e8ed;
+        }
+
+        .recipe-result h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Markdown styling for recipe content */
+        .recipe-content {
+            line-height: 1.8;
+        }
+
+        .recipe-content h1, .recipe-content h2, .recipe-content h3, 
+        .recipe-content h4, .recipe-content h5, .recipe-content h6 {
+            color: #2c3e50;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .recipe-content h1 { font-size: 1.8rem; }
+        .recipe-content h2 { font-size: 1.5rem; }
+        .recipe-content h3 { font-size: 1.3rem; }
+        .recipe-content h4 { font-size: 1.1rem; }
+
+        .recipe-content p {
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+
+        .recipe-content ul, .recipe-content ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .recipe-content li {
+            margin-bottom: 0.5rem;
+            color: #495057;
+        }
+
+        .recipe-content strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .recipe-content em {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .recipe-content code {
+            background: #e9ecef;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .recipe-content blockquote {
+            border-left: 4px solid #3498db;
+            margin: 1rem 0;
+            padding: 1rem 1.5rem;
+            background: #f1f3f4;
+            font-style: italic;
+            color: #6c757d;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #3498db;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-error {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+            color: #6c757d;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e1e8ed;
+            border-radius: 50%;
+            border-top-color: #3498db;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 1rem;
+            }
+            
+            .form-group input,
+            .btn {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Kalimati Market Data</h1>
+    <div class="container">
+        <!-- Header -->
+        <div class="header fade-in">
+            <h1><i class="fas fa-chart-line"></i> Kalimati Market Analytics</h1>
+            <p>Real-time commodity prices and AI-powered recipe suggestions</p>
+        </div>
 
-    <h2>Average Prices Over Time</h2>
-    {{ avg_chart|safe }}
+        <!-- Error Display -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-exclamation-triangle"></i> {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-    <h2>Minimum vs Maximum Prices</h2>
-    {{ scatter_chart|safe }}
+        {% if error %}
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-triangle"></i> {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Statistics Cards -->
+        {% if latest_year and top_commodities %}
+        <div class="stats-grid fade-in">
+            <div class="stat-card">
+                <div class="stat-number">{{ latest_year }}</div>
+                <div class="stat-label">Latest Year</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ top_commodities|length }}</div>
+                <div class="stat-label">Top Commodities</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><i class="fas fa-database"></i></div>
+                <div class="stat-label">Live Data</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Charts Section -->
+        {% if avg_chart %}
+        <div class="card fade-in">
+            <h2><i class="fas fa-chart-line"></i> Price Trends Analysis</h2>
+            <div class="chart-container">
+                {{ avg_chart|safe }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if scatter_chart %}
+        <div class="card fade-in">
+            <h2><i class="fas fa-chart-area"></i> Price Range Analysis</h2>
+            <div class="chart-container">
+                {{ scatter_chart|safe }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recipe Recommendation Section -->
+        <div class="card recipe-section fade-in">
+            <h2><i class="fas fa-utensils"></i> AI Recipe Suggestions</h2>
+            <p style="margin-bottom: 2rem; opacity: 0.8; color: #6c757d;">Get personalized Nepali recipe recommendations based on your budget and current market prices!</p>
+            
+            <form method="POST" class="recipe-form" onsubmit="showLoading()">
+                <div class="form-group">
+                    <label for="budget"><i class="fas fa-coins"></i> Enter your budget (NPR):</label>
+                    <input type="number" 
+                           id="budget" 
+                           name="budget" 
+                           placeholder="e.g., 500" 
+                           required 
+                           min="50" 
+                           max="10000"
+                           step="50">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-magic"></i> Get Recipe Recommendation
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Generating your personalized recipe...</p>
+            </div>
+
+            {% if recipe_recommendation %}
+            <div class="recipe-result fade-in">
+                <h3><i class="fas fa-chef-hat"></i> Your Recipe Recommendation:</h3>
+                <div class="recipe-content" id="recipe-content"></div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if recipe_recommendation %}
+    <script type="application/json" id="recipe-data">{{ recipe_recommendation|tojson }}</script>
+    {% endif %}
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        // Render markdown content if recipe recommendation exists
+        document.addEventListener('DOMContentLoaded', function() {
+            const recipeContent = document.getElementById('recipe-content');
+            const recipeDataElement = document.getElementById('recipe-data');
+            
+            if (recipeContent && recipeDataElement) {
+                const markdownText = JSON.parse(recipeDataElement.textContent);
+                recipeContent.innerHTML = marked.parse(markdownText);
+            }
+        });
+
+        // Add smooth scrolling to all links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
 </body>
 </html>
