@@ -1,0 +1,13 @@
+2025-08-17 00:59:02,205 [MainThread  ] [INFO ]  Extraction path is required
+2025-08-17 00:59:02,206 [MainThread  ] [INFO ]  Exame Usage:
+2025-08-17 00:59:02,206 [MainThread  ] [INFO ]  python3 execute.py /home/Data/Extraction
+2025-08-17 00:59:05,251 [MainThread  ] [INFO ]  Starting Extration Engine...
+2025-08-17 00:59:07,806 [MainThread  ] [INFO ]  Downloaded zip file: data/downloaded.zip
+2025-08-17 00:59:07,847 [MainThread  ] [INFO ]  Extract files written to: data
+2025-08-17 00:59:07,847 [MainThread  ] [INFO ]  Removing the zip file
+2025-08-17 00:59:07,847 [MainThread  ] [ERROR]  Error: [Errno 2] No such file or directory: 'data/dict_artists.json'
+2025-08-17 01:00:53,396 [MainThread  ] [INFO ]  Starting Extration Engine...
+2025-08-17 01:00:55,815 [MainThread  ] [INFO ]  Downloaded zip file: data/downloaded.zip
+2025-08-17 01:00:55,885 [MainThread  ] [INFO ]  Extract files written to: data
+2025-08-17 01:00:55,886 [MainThread  ] [INFO ]  Removing the zip file
+2025-08-17 01:00:55,886 [MainThread  ] [INFO ]  Extraction Successfully Completed!! :))
