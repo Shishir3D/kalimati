@@ -7,18 +7,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utility.utility import setup_logging
 
 
-def create_spark_session(spark_config):
+def create_spark_session():
     """Initialize Spark session."""
     return (
-        SparkSession.builder.master(f"spark://{spark_config['master_ip']}:7077")
-        .appName("KalimatiDataTransform")
-        .config("spark.driver.memory", spark_config["driver_memory"])
-        .config("spark.executor.memory", spark_config["executor_memory"])
-        .config("spark.executor.cores", spark_config["executor_cores"])
-        .config("spark.executor.instances", spark_config["executor_instances"])
+        SparkSession.builder.appName("SpotifyDataTransform")
+        .config("spark.driver.memory", "2g")
+        .config("spark.executor.memory", "4g")
         .getOrCreate()
     )
-
 
 def load_and_clean(spark, input_dir, output_dir):
     """Stage 1: Load data, drop duplicates, remove nulls, save cleaned data."""
@@ -108,23 +104,17 @@ def create_query_tables(output_dir, df):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 8:
+    if len(sys.argv) != 3:
         print(
-            "Usage: python transform.py <input_dir> <output_dir> master_ip d_mem e_mem e_core e_inst"
+            "Usage: python transform.py <input_dir> <output_dir>"
         )
         sys.exit(1)
 
     input_dir = sys.argv[1]
     output_dir = sys.argv[2]
-    spark_config = {
-        "master_ip": sys.argv[3],
-        "driver_memory": sys.argv[4],
-        "executor_memory": sys.argv[5],
-        "executor_cores": sys.argv[6],
-        "executor_instances": sys.argv[7],
-    }
 
-    spark = create_spark_session(spark_config)
+
+    spark = create_spark_session()
 
     df = load_and_clean(spark, input_dir, output_dir)
     master_df = create_master_table(output_dir, df)
