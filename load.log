@@ -1,0 +1,7 @@
+2025-08-17 01:52:03,312 [MainThread  ] [CRITI]  Usage: python load/execute.py <input_dir> <pg_un> <pg_pw> <pg_host>
+2025-08-17 01:52:22,004 [MainThread  ] [CRITI]  Usage: python load/execute.py <input_dir> <pg_un> <pg_pw> <pg_host>
+2025-08-17 01:53:11,080 [MainThread  ] [INFO ]  Load stage started
+2025-08-17 01:53:15,013 [MainThread  ] [INFO ]  PostgreSQL table for Kalimati dataset created successfully
+2025-08-17 01:53:15,971 [MainThread  ] [ERROR]  Error loading Kalimati dataset: Path does not exist: file:/home/xixir/ai/bigData/fproject/data/transform/kalimati
+2025-08-17 01:53:15,971 [MainThread  ] [INFO ]  Load stage completed in 4.89 seconds
+2025-08-17 01:53:15,972 [MainThread  ] [INFO ]  Closing down clientserver connection

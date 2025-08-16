@@ -1,8 +1,7 @@
-import time
 import sys
 import os
+import time
 import psycopg2
-from psycopg2 import sql
 from pyspark.sql import SparkSession
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -12,15 +11,16 @@ from utility.utility import setup_logging
 def create_spark_session():
     """Initialize Spark session."""
     return (
-        SparkSession.builder.appName("SpotifyDataTransform")
+        SparkSession.builder.appName("KalimatiDataLoad")
         .config("spark.driver.memory", "2g")
         .config("spark.executor.memory", "4g")
         .getOrCreate()
     )
 
 
-def create_postgres_tables(logger, pg_un, pg_pw, pg_host):
-    conn = None
+def create_postgres_tables(pg_un, pg_pw, pg_host):
+    """Stage 1: Create PostgreSQL tables if they don’t exist."""
+    conn, cursor = None, None
     try:
         conn = psycopg2.connect(
             dbname="postgres",
@@ -31,32 +31,58 @@ def create_postgres_tables(logger, pg_un, pg_pw, pg_host):
         )
         cursor = conn.cursor()
 
-        # Adjust schema for Kalimati dataset
         create_table_query = """
-            CREATE TABLE IF NOT EXISTS kalimati_prices (
+            CREATE TABLE IF NOT EXISTS kalimati_master (
+                name_original TEXT,
+                name TEXT,
+                type TEXT,
+                color TEXT,
+                location TEXT,
                 date DATE,
-                commodity TEXT,
                 unit TEXT,
-                minimum_price FLOAT,
-                maximum_price FLOAT,
-                average_price FLOAT
+                maximum FLOAT,
+                minimum FLOAT,
+                average FLOAT
+            );
+
+            CREATE TABLE IF NOT EXISTS kalimati_prices_by_date (
+                date DATE,
+                name TEXT,
+                avg_price FLOAT,
+                avg_max FLOAT,
+                avg_min FLOAT
+            );
+
+            CREATE TABLE IF NOT EXISTS kalimati_prices_by_location (
+                location TEXT,
+                name TEXT,
+                avg_price FLOAT
+            );
+
+            CREATE TABLE IF NOT EXISTS kalimati_metadata (
+                name_original TEXT,
+                name TEXT,
+                type TEXT,
+                color TEXT,
+                unit TEXT
             );
         """
-
         cursor.execute(create_table_query)
         conn.commit()
-        logger.info("PostgreSQL table for Kalimati dataset created successfully")
+        print("Stage 1: PostgreSQL tables created successfully")
 
     except Exception as e:
-        logger.error(f"Error creating table: {e}")
+        print(f"Error creating tables: {e}")
     finally:
-        if cursor:  # type: ignore
+        if cursor:
             cursor.close()
         if conn:
             conn.close()
 
 
-def load_to_postgres(logger, spark, input_dir, pg_un, pg_pw, pg_host):
+def load_to_postgres(spark, input_dir, pg_un, pg_pw, pg_host):
+    """Stage 2: Load parquet data into PostgreSQL tables."""
+
     jdbc_url = f"jdbc:postgresql://{pg_host}:5432/postgres"
     connection_properties = {
         "user": pg_un,
@@ -65,28 +91,44 @@ def load_to_postgres(logger, spark, input_dir, pg_un, pg_pw, pg_host):
     }
 
     try:
-        # Assuming parquet file(s) inside input_dir/kalimati/
-        df = spark.read.parquet(os.path.join(input_dir, "kalimati"))
-        df.write.mode("overwrite").jdbc(
-            url=jdbc_url, table="kalimati_prices", properties=connection_properties
+        # Load Master
+        master_df = spark.read.parquet(os.path.join(input_dir, "stage2", "master_table"))
+        master_df.write.mode("overwrite").jdbc(
+            url=jdbc_url, table="kalimati_master", properties=connection_properties
         )
-        logger.info("Loaded Kalimati dataset to PostgreSQL")
+
+        # Load Prices by Date
+        prices_by_date = spark.read.parquet(
+            os.path.join(input_dir, "stage3", "prices_by_date")
+        )
+        prices_by_date.write.mode("overwrite").jdbc(
+            url=jdbc_url, table="kalimati_prices_by_date", properties=connection_properties
+        )
+
+        # Load Prices by Location
+        prices_by_location = spark.read.parquet(
+            os.path.join(input_dir, "stage3", "prices_by_location")
+        )
+        prices_by_location.write.mode("overwrite").jdbc(
+            url=jdbc_url, table="kalimati_prices_by_location", properties=connection_properties
+        )
+
+        # Load Metadata
+        metadata = spark.read.parquet(os.path.join(input_dir, "stage3", "metadata"))
+        metadata.write.mode("overwrite").jdbc(
+            url=jdbc_url, table="kalimati_metadata", properties=connection_properties
+        )
+
+        print("Stage 2: Loaded all datasets into PostgreSQL")
+
     except Exception as e:
-        logger.error(f"Error loading Kalimati dataset: {e}")
+        print(f"Error loading data: {e}")
 
 
 if __name__ == "__main__":
-
-    logger = setup_logging("load.log")
-
-    if len(sys.argv) != 9:
-        logger.critical(
-            "Usage: python load/execute.py <input_dir> <pg_un> <pg_pw> <pg_host>"
-        )
+    if len(sys.argv) != 5:
+        print("Usage: python load/execute.py <input_dir> <pg_un> <pg_pw> <pg_host>")
         sys.exit(1)
-
-    logger.info("Load stage started")
-    start = time.time()
 
     input_dir = sys.argv[1]
     pg_un = sys.argv[2]
@@ -94,12 +136,14 @@ if __name__ == "__main__":
     pg_host = sys.argv[4]
 
     if not os.path.exists(input_dir):
-        logger.error(f"Error: Input directory {input_dir} does not exist")
+        print(f"Error: Input directory {input_dir} does not exist")
         sys.exit(1)
 
+    start = time.time()
     spark = create_spark_session()
-    create_postgres_tables(logger, pg_un, pg_pw, pg_host)
-    load_to_postgres(logger, spark, input_dir, pg_un, pg_pw, pg_host)
+
+    create_postgres_tables(pg_un, pg_pw, pg_host)
+    load_to_postgres(spark, input_dir, pg_un, pg_pw, pg_host)
 
     end = time.time()
-    logger.info(f"Load stage completed in {round(end-start,2)} seconds")
+    print(f"Load pipeline completed in {round(end-start,2)} seconds")
