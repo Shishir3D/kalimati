@@ -165,9 +165,9 @@ def index():
         return render_template("index.html", error=str(e))
 
 
+
 def get_recipe_recommendation(budget, commodities):
     try:
-        # Create a more specific prompt
         commodities_list = ", ".join(commodities)
         prompt = f"""
         As a chef specializing in Nepali cuisine, suggest a delicious and nutritious recipe 
@@ -184,22 +184,23 @@ def get_recipe_recommendation(budget, commodities):
         Keep it practical and authentic to Nepali cuisine.
         """
 
-        # Use the correct Gemini API
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(
             prompt,
-            generation_config=genai.types.GenerationConfig(
+            generation_config=genai.GenerationConfig(
                 temperature=0.7,
                 max_output_tokens=400,
             ),
         )
 
-        return response.text
-
+        # Safely extract text
+        if response and response.candidates:
+            return response.candidates[0].content.parts[0].text
+        else:
+            return "Sorry, I couldn't generate a recipe recommendation."
     except Exception as e:
         logger.error(f"Error generating recipe: {e}")
-        return f"Sorry, I couldn't generate a recipe recommendation at the moment. Please try again later."
-
+        return "Sorry, I couldn't generate a recipe recommendation at the moment."
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
