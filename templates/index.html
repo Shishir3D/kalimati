@@ -3,504 +3,175 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kalimati Market Analytics & Recipe Suggestions</title>
+    <title>Kalimati Market Analytics</title>
 
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Font Awesome Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-
-    <!-- Marked.js for markdown parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <!-- Google Fonts, Font Awesome, Marked.js (No changes) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      /* CSS Styles (No changes from previous spacious design) */
+      :root {
+        --bg-main: #f9fafb; --bg-card: #ffffff; --text-heading: #111827; --text-body: #374151;
+        --text-muted: #6b7280; --border-color: #e5e7eb; --accent-color: #4f46e5; --accent-hover: #4338ca;
+        --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
       }
-
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
       body {
-        font-family: "Inter", sans-serif;
-        line-height: 1.6;
-        color: #2c3e50;
-        background: #f8f9fa;
-        min-height: 100vh;
+        font-family: "Inter", system-ui, -apple-system, sans-serif; background-color: var(--bg-main);
+        color: var(--text-body); line-height: 1.7; -webkit-font-smoothing: antialiased;
       }
-
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 3rem;
-        padding: 2rem 0;
-        background: white;
-        border-radius: 20px;
-        border: 1px solid #e1e8ed;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-      }
-
-      .header h1 {
-        font-size: 3rem;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 1rem;
-      }
-
-      .header p {
-        font-size: 1.2rem;
-        color: #6c757d;
-        font-weight: 300;
-      }
-
-      .card {
-        background: white;
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e1e8ed;
-        transition:
-          transform 0.3s ease,
-          box-shadow 0.3s ease;
-      }
-
-      .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-      }
-
-      .card h2 {
-        font-size: 1.8rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .chart-container {
-        margin: 2rem 0;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      }
-
-      .recipe-section {
-        background: #fff;
-        color: #2c3e50;
-        border-left: 4px solid #3498db;
-      }
-
-      .recipe-form {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      .form-group label {
-        font-weight: 500;
-        font-size: 1.1rem;
-      }
-
-      .form-group input {
-        padding: 1rem;
-        border: 2px solid #e1e8ed;
-        border-radius: 10px;
-        font-size: 1rem;
-        background: #f8f9fa;
-        color: #2c3e50;
-        transition: all 0.3s ease;
-      }
-
-      .form-group input:focus {
-        outline: none;
-        background: white;
-        border-color: #3498db;
-        transform: scale(1.02);
-      }
-
-      .form-group input::placeholder {
-        color: #6c757d;
-      }
-
-      .btn {
-        padding: 1rem 2rem;
-        border: none;
-        border-radius: 10px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-      }
-
-      .btn-primary {
-        background: #3498db;
-        color: white;
-        border: 2px solid #3498db;
-      }
-
-      .btn-primary:hover {
-        background: #2980b9;
-        border-color: #2980b9;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(52, 152, 219, 0.3);
-      }
-
-      .recipe-result {
-        background: #f8f9fa;
-        border-radius: 15px;
-        padding: 2rem;
-        margin-top: 2rem;
-        border: 1px solid #e1e8ed;
-      }
-
-      .recipe-result h3 {
-        font-size: 1.4rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #2c3e50;
-        border-bottom: 2px solid #3498db;
-        padding-bottom: 0.5rem;
-      }
-
-      /* Markdown styling for recipe content */
-      .recipe-content {
-        line-height: 1.8;
-      }
-
-      .recipe-content h1,
-      .recipe-content h2,
-      .recipe-content h3,
-      .recipe-content h4,
-      .recipe-content h5,
-      .recipe-content h6 {
-        color: #2c3e50;
-        margin-top: 1.5rem;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-      }
-
-      .recipe-content h1 {
-        font-size: 1.8rem;
-      }
-      .recipe-content h2 {
-        font-size: 1.5rem;
-      }
-      .recipe-content h3 {
-        font-size: 1.3rem;
-      }
-      .recipe-content h4 {
-        font-size: 1.1rem;
-      }
-
-      .recipe-content p {
-        margin-bottom: 1rem;
-        color: #495057;
-      }
-
-      .recipe-content ul,
-      .recipe-content ol {
-        margin: 1rem 0;
-        padding-left: 2rem;
-      }
-
-      .recipe-content li {
-        margin-bottom: 0.5rem;
-        color: #495057;
-      }
-
-      .recipe-content strong {
-        color: #2c3e50;
-        font-weight: 600;
-      }
-
-      .recipe-content em {
-        color: #6c757d;
-        font-style: italic;
-      }
-
-      .recipe-content code {
-        background: #e9ecef;
-        padding: 0.2rem 0.4rem;
-        border-radius: 4px;
-        font-family: "Courier New", monospace;
-        font-size: 0.9rem;
-      }
-
-      .recipe-content blockquote {
-        border-left: 4px solid #3498db;
-        margin: 1rem 0;
-        padding: 1rem 1.5rem;
-        background: #f1f3f4;
-        font-style: italic;
-        color: #6c757d;
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-      }
-
-      .stat-card {
-        background: #3498db;
-        color: white;
-        padding: 1.5rem;
-        border-radius: 15px;
-        text-align: center;
-        box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
-      }
-
-      .stat-number {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-      }
-
-      .stat-label {
-        font-size: 0.9rem;
-        opacity: 0.9;
-      }
-
-      .alert {
-        padding: 1rem;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-      }
-
-      .alert-error {
-        background: rgba(231, 76, 60, 0.1);
-        border: 1px solid rgba(231, 76, 60, 0.3);
-        color: #e74c3c;
-      }
-
-      .loading {
-        display: none;
-        text-align: center;
-        margin: 2rem 0;
-        color: #6c757d;
-      }
-
-      .spinner {
-        display: inline-block;
-        width: 40px;
-        height: 40px;
-        border: 4px solid #e1e8ed;
-        border-radius: 50%;
-        border-top-color: #3498db;
-        animation: spin 1s ease-in-out infinite;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .fade-in {
-        animation: fadeIn 0.5s ease-in;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @media (max-width: 768px) {
-        .container {
-          padding: 10px;
-        }
-
-        .header h1 {
-          font-size: 2rem;
-        }
-
-        .card {
-          padding: 1rem;
-        }
-
-        .form-group input,
-        .btn {
-          font-size: 1rem;
-        }
-      }
+      .container { max-width: 1100px; margin: 0 auto; padding: 6rem 2rem; }
+      .page-header { text-align: center; margin-bottom: 5rem; }
+      .page-header h1 { font-size: 3.75rem; font-weight: 800; color: var(--text-heading); letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 1rem; }
+      .page-header p { font-size: 1.25rem; color: var(--text-muted); max-width: 650px; margin: 0 auto; }
+      .controls-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 3rem; /* Reduced bottom margin */ }
+      @media (min-width: 768px) { .controls-grid { grid-template-columns: 1fr 1fr; } }
+      .control-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; box-shadow: var(--shadow); height: 100%; display: flex; flex-direction: column; }
+      .control-card-header { margin-bottom: 1.5rem; }
+      .control-card-header h2 { font-size: 1.25rem; font-weight: 600; color: var(--text-heading); }
+      .control-card-header p { color: var(--text-muted); font-size: 0.9rem; }
+      .minimal-form { display: flex; flex-direction: column; gap: 1.25rem; flex-grow: 1; justify-content: space-between; }
+      .form-group label { font-size: 0.875rem; font-weight: 500; color: var(--text-body); margin-bottom: 0.5rem; display: block; }
+      .form-input { width: 100%; padding: 0.8rem 1rem; font-size: 1rem; font-family: inherit; background-color: #f3f4f6; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-heading); transition: border-color 0.2s, box-shadow 0.2s; }
+      .form-input:focus { outline: none; background-color: var(--bg-card); border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12); }
+      .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+      .btn-primary { background-color: var(--accent-color); color: white; }
+      .btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-2px); }
+      .results-divider { border: 0; height: 1px; background-color: var(--border-color); margin: 0 0 5rem 0; }
+      .chart-wrapper { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 2.5rem; margin-bottom: 3rem; box-shadow: var(--shadow); }
+      .chart-wrapper .plotly { margin-top: 1.5rem; }
+      .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #fca5a5; background-color: #fef2f2; color: #991b1b; }
+      .loading { display: none; text-align: center; padding-top: 1rem; color: var(--text-muted); }
+      .spinner { width: 24px; height: 24px; border: 3px solid var(--border-color); border-radius: 50%; border-top-color: var(--accent-color); animation: spin 1s ease-in-out infinite; margin: 0 auto 1rem auto; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .recipe-result { margin-top: 1.5rem; } /* Simplified from border-top version */
+      .recipe-title { font-size: 1.5rem; font-weight: 600; color: var(--text-heading); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;}
+      .recipe-content h1, .recipe-content h2, .recipe-content h3 { font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.1rem; color: var(--text-heading); }
+      .recipe-content p, .recipe-content li { color: var(--text-body); }
+      .recipe-content strong { color: var(--text-heading); }
+      .fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
   </head>
   <body>
     <div class="container">
-      <!-- Header -->
-      <div class="header fade-in">
-        <h1><i class="fas fa-chart-line"></i> Kalimati Market Analytics</h1>
-        <p>Real-time vegetable prices and AI-powered recipe suggestions</p>
-      </div>
+      <!-- ===== PAGE HEADER ===== -->
+      <header class="page-header fade-in">
+        <h1>Kalimati Market Analytics</h1>
+        <p>An interactive report on vegetable prices with AI-powered culinary suggestions.</p>
+      </header>
 
-      <!-- Error Display -->
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %} {% for category, message in messages %}
-      <div class="alert alert-{{ category }}">
-        <i class="fas fa-exclamation-triangle"></i> {{ message }}
-      </div>
-      {% endfor %} {% endif %} {% endwith %} {% if error %}
-      <div class="alert alert-error">
-        <i class="fas fa-exclamation-triangle"></i> {{ error }}
-      </div>
-      {% endif %}
+      <!-- Display Errors/Flash messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}"> {{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% if error %}<div class="alert">{{ error }}</div>{% endif %}
 
-      <!-- Statistics Cards -->
-      {% if latest_year and top_commodities %}
-      <div class="stats-grid fade-in">
-        <div class="stat-card">
-          <div class="stat-number">{{ latest_year }}</div>
-          <div class="stat-label">Latest Year</div>
+      <!-- ===== CONTROLS SECTION ===== -->
+      <section id="controls" class="controls-grid fade-in" style="animation-delay: 0.1s;">
+        <!-- Card 1: Vegetable Search -->
+        <div class="control-card">
+          <div class="control-card-header"><h2>Analyze a Vegetable</h2><p>View the price history for a specific item.</p></div>
+          <form method="GET" action="/" class="minimal-form">
+            <div class="form-group">
+              <label for="commodity-search">Vegetable Name</label>
+              <input type="text" id="commodity-search" name="commodity" class="form-input" placeholder="e.g., Potato, Tomato..." required list="commodity-list" value="{{ searched_commodity or '' }}" />
+              {% if all_commodities %}<datalist id="commodity-list">{% for c in all_commodities %}<option value="{{ c }}"></option>{% endfor %}</datalist>{% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-chart-line"></i> Show Trend</button>
+          </form>
         </div>
-        <div class="stat-card">
-          <div class="stat-number">{{ top_commodities|length }}</div>
-          <div class="stat-label">Top vegetable</div>
+        <!-- Card 2: AI Recipe Generator -->
+        <div class="control-card">
+          <div class="control-card-header"><h2>AI Recipe Helper</h2><p>Get a recipe suggestion based on your budget.</p></div>
+          <form method="POST" class="minimal-form" onsubmit="showLoading()">
+            <div>
+              <div class="form-group">
+                <label for="budget">Your Budget (NPR)</label>
+                <input type="number" id="budget" name="budget" class="form-input" placeholder="e.g., 500" required min="50" step="50"/>
+              </div>
+              <div class="loading" id="loading"><div class="spinner"></div><p>Crafting your recipe...</p></div>
+              <!-- 
+                THE RECIPE RESULT BLOCK WAS HERE. IT HAS BEEN MOVED OUT.
+              -->
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Get Recipe</button>
+          </form>
         </div>
-        <div class="stat-card">
-          <div class="stat-number"><i class="fas fa-database"></i></div>
-          <div class="stat-label">Live Data</div>
-        </div>
-      </div>
-      {% endif %}
+      </section>
 
-      <!-- Charts Section -->
-      {% if avg_chart %}
-      <div class="card fade-in">
-        <h2><i class="fas fa-chart-line"></i> Price Trends Analysis</h2>
-        <div class="chart-container">{{ avg_chart|safe }}</div>
-      </div>
-      {% endif %} {% if scatter_chart %}
-      <div class="card fade-in">
-        <h2><i class="fas fa-chart-area"></i> Price Range Analysis</h2>
-        <div class="chart-container">{{ scatter_chart|safe }}</div>
-      </div>
-      {% endif %}
-
-      <!-- Recipe Recommendation Section -->
-      <div class="card recipe-section fade-in">
-        <h2><i class="fas fa-utensils"></i> AI Recipe Suggestions</h2>
-        <p style="margin-bottom: 2rem; opacity: 0.8; color: #6c757d">
-          Get personalized Nepali recipe recommendations based on your budget
-          and current market prices!
-        </p>
-
-        <form method="POST" class="recipe-form" onsubmit="showLoading()">
-          <div class="form-group">
-            <label for="budget"
-              ><i class="fas fa-coins"></i> Enter your budget (NPR):</label
-            >
-            <input
-              type="number"
-              id="budget"
-              name="budget"
-              placeholder="e.g., 500"
-              required
-              min="50"
-              max="10000"
-              step="50"
-            />
-          </div>
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-magic"></i> Get Recipe Recommendation
-          </button>
-        </form>
-
-        <div class="loading" id="loading">
-          <div class="spinner"></div>
-          <p>Generating your personalized recipe...</p>
-        </div>
-
-        {% if recipe_recommendation %}
-        <div class="recipe-result fade-in">
-          <h3><i class="fas fa-chef-hat"></i> Your Recipe Recommendation:</h3>
+      <!-- ===== NEW: AI RECIPE RESULT SECTION ===== -->
+      <!-- This block only appears if a recipe has been generated -->
+      {% if recipe_recommendation %}
+      <section id="recipe-display" class="chart-wrapper fade-in" style="animation-delay: 0.2s;">
+        <h2 class="recipe-title"><i class="fa-solid fa-hat-chef"></i> AI Recipe Suggestion</h2>
+        <div class="recipe-result">
           <div class="recipe-content" id="recipe-content"></div>
         </div>
+      </section>
+      {% endif %}
+
+      <!-- ===== RESULTS DIVIDER ===== -->
+      <hr class="results-divider">
+
+      <!-- ===== RESULTS SECTION (CHARTS) ===== -->
+      <section id="results">
+        <!-- Searched Vegetable Chart -->
+        {% if bar_chart_html %}
+        <div class="chart-wrapper fade-in" style="animation-delay: 0.3s;">
+          {{ bar_chart_html|safe }}
+        </div>
         {% endif %}
-      </div>
+
+        <!-- Monthly Seasonality Chart -->
+        {% if seasonality_chart_html %}
+        <div class="chart-wrapper fade-in" style="animation-delay: 0.4s;">
+          {{ seasonality_chart_html|safe }}
+        </div>
+        {% endif %}
+
+        <!-- Price Volatility Chart -->
+        {% if range_chart_html %}
+        <div class="chart-wrapper fade-in" style="animation-delay: 0.5s;">
+          {{ range_chart_html|safe }}
+        </div>
+        {% endif %}
+
+        <!-- Top 10 Price Trends Chart -->
+        {% if avg_chart %}
+        <div class="chart-wrapper fade-in" style="animation-delay: 0.6s;">
+          {{ avg_chart|safe }}
+        </div>
+        {% endif %}
+      </section>
     </div>
 
-    {% if recipe_recommendation %}
-    <script type="application/json" id="recipe-data">
-      {{ recipe_recommendation|tojson }}
-    </script>
-    {% endif %}
-
+    <!-- Hidden data & Scripts (No changes) -->
+    {% if recipe_recommendation %}<script type="application/json" id="recipe-data">{{ recipe_recommendation|tojson }}</script>{% endif %}
     <script>
       function showLoading() {
+        // We no longer need to hide the old result because the page reloads,
+        // but we keep the function to show the spinner.
         document.getElementById("loading").style.display = "block";
       }
-
-      // Render markdown content if recipe recommendation exists
       document.addEventListener("DOMContentLoaded", function () {
         const recipeContent = document.getElementById("recipe-content");
         const recipeDataElement = document.getElementById("recipe-data");
-
         if (recipeContent && recipeDataElement) {
-          const markdownText = JSON.parse(recipeDataElement.textContent);
-          recipeContent.innerHTML = marked.parse(markdownText);
+          try {
+            const markdownText = JSON.parse(recipeDataElement.textContent);
+            recipeContent.innerHTML = marked.parse(markdownText);
+          } catch (e) { console.error("Error parsing recipe data:", e); recipeContent.textContent = "Could not display recipe."; }
         }
-      });
-
-      // Add smooth scrolling to all links
-      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-        anchor.addEventListener("click", function (e) {
-          e.preventDefault();
-          document.querySelector(this.getAttribute("href")).scrollIntoView({
-            behavior: "smooth",
-          });
-        });
-      });
-
-      // Add animation on scroll
-      const observerOptions = {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px",
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("fade-in");
-          }
-        });
-      }, observerOptions);
-
-      document.querySelectorAll(".card").forEach((card) => {
-        observer.observe(card);
       });
     </script>
   </body>
